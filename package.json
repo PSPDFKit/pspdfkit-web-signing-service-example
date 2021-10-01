@@ -1,0 +1,20 @@
+{
+  "name": "signing-service",
+  "version": "1.0.0",
+  "description": "Example service to digitally sign PDF documents",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node index.js"
+  },
+  "author": "PSPDFKit Team",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "node-forge": "^0.9.1"
+  },
+  "devDependencies": {
+    "jest": "^24.9.0",
+    "supertest": "^4.0.2"
+  }
+}
