@@ -10,7 +10,7 @@ OpenSSL implementation (more specifically, [LibreSSL](https://www.libressl.org/)
 
 We know three ways of solving that.
 
-#### Updating system configuration
+#### Option 1: updating system configuration
 
 Following the [recommendation from Michael MacFadden](https://github.com/cert-manager/cert-manager/issues/279#issuecomment-365827793), add the following lines to `/etc/ssl/openssl.cnf`:
 
@@ -21,15 +21,18 @@ subjectKeyIdentifier = hash
 authorityKeyIdentifier = keyid:always,issuer:always
 ```
 
-#### Running OpenSSL from a container
+#### Option 2: running OpenSSL from a container
 
 If you use [Docker](https://www.docker.com/) or another container engine, OpenSSL operations can be wrapped in any container that includes fresh OpenSSL for Linux, e.g. [nginx](https://hub.docker.com/_/nginx):
 
 ```
-docker run --rm -it  -v "$PWD:/working-directory" -w "/working-directory" nginx:latest openssl ...
+docker run --rm -it \
+  -v "$PWD:/working-directory" -w "/working-directory" \
+  nginx:latest \
+  openssl <...>
 ```
 
-#### Fully custom OpenSSL with HomeBrew
+#### Option 3: fully custom OpenSSL with HomeBrew
 
 If you are using [HomeBrew](https://brew.sh/), the corresponding [formula](https://formulae.brew.sh/formula/openssl@3) may be used:
 
@@ -57,7 +60,7 @@ openssl req \
   -out test-ca.cert
 ```
 
-Please note the `CN` (*common name*) parameter -- it will be the name of the CA. File `test-ca.cert` will be [root CA](https://en.wikipedia.org/wiki/Root_certificate) in our setup.
+Please note the `CN` (*common name*) parameter --- it will be the name of the CA. File `test-ca.cert` will be [root CA](https://en.wikipedia.org/wiki/Root_certificate) in our setup.
 
 ## 2. Request and sign a signing certificate
 
