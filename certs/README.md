@@ -50,7 +50,11 @@ This will create file `test-ca.key` which will be required on the next steps.
 Generate self signed CA certificate valid for ten years:
 
 ```
-openssl req -x509 -new -nodes -key test-ca.key -subj "/CN=My Test CA v1" -days 3650 -reqexts v3_req -extensions v3_ca -out test-ca.cert
+openssl req \
+  -x509 -new -nodes -key test-ca.key \
+  -subj "/CN=My Test CA v1" \
+  -days 3650 -reqexts v3_req -extensions v3_ca \
+  -out test-ca.cert
 ```
 
 Please note the `CN` (*common name*) parameter -- it will be the name of the CA. File `test-ca.cert` will be [root CA](https://en.wikipedia.org/wiki/Root_certificate) in our setup.
@@ -60,13 +64,20 @@ Please note the `CN` (*common name*) parameter -- it will be the name of the CA.
 The following command will generate a certificate request and a private key. Like with CA, `CN` parameter should be defined by the user convenience, it will be used to identify the signing entity:
 
 ```
-openssl req -utf8 -nameopt oneline,utf8 -new -newkey rsa:2048 -nodes -subj "/CN=My Testing Document Signer" -keyout test-signer.key -out test-signer.csr
+openssl req \
+  -utf8 -nameopt oneline,utf8 -new -newkey rsa:2048 -nodes \
+  -subj "/CN=My Testing Document Signer" \
+  -keyout test-signer.key -out test-signer.csr
 ```
 
 Sign a certificate using `test-signer.csr` and CA private key and certificate created earlier:
 
 ```
-openssl x509 -days 365 -CA test-ca.cert -CAkey test-ca.key -CAcreateserial -in test-signer.csr -req -out test-signer.cert
+openssl x509 \
+  -days 365 \
+  -CA test-ca.cert -CAkey test-ca.key -CAcreateserial \
+  -in test-signer.csr -req \
+  -out test-signer.cert
 ```
 
 We now have three useful files:
