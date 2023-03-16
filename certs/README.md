@@ -40,7 +40,11 @@ If you are using [HomeBrew](https://brew.sh/), the corresponding [formula](https
 brew install openssl@3
 ```
 
-## 1. Prepare Certification Authority
+## Certificate generation
+
+The following two steps are also implemented in [generate-certificates.sh](./generate-certificates.sh), which runs without parameters.
+
+### 1. Prepare Certification Authority
 
 Generate CA private key:
 
@@ -62,7 +66,7 @@ openssl req \
 
 Please note the `CN` (*common name*) parameter: it will be the name of the CA. File `test-ca.cert` will be [root CA](https://en.wikipedia.org/wiki/Root_certificate) in our setup.
 
-## 2. Request and sign a signing certificate
+### 2. Request and sign a signing certificate
 
 The following command will generate a certificate request and a private key. Like with CA, `CN` parameter should be defined by the user convenience, it will be used to identify the signing entity:
 
@@ -90,7 +94,7 @@ We now have three useful files:
 * `test-signer.key`: private key of the signer certificate.
 
 
-## 3. Verify the generated certificates
+## Verify the generated certificates
 
 CA: 
 
