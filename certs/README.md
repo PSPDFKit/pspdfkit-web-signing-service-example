@@ -131,7 +131,3 @@ Certificate:
         Issuer: CN=My Test CA v1
         Subject: CN=My Testing Document Signer
 ```
-
-## 4. Bundle certificate as a PKCS7 container
-
-Optional, pem should already be usable.
