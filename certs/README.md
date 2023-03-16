@@ -60,7 +60,7 @@ openssl req \
   -out test-ca.cert
 ```
 
-Please note the `CN` (*common name*) parameter --- it will be the name of the CA. File `test-ca.cert` will be [root CA](https://en.wikipedia.org/wiki/Root_certificate) in our setup.
+Please note the `CN` (*common name*) parameter: it will be the name of the CA. File `test-ca.cert` will be [root CA](https://en.wikipedia.org/wiki/Root_certificate) in our setup.
 
 ## 2. Request and sign a signing certificate
 
@@ -85,9 +85,9 @@ openssl x509 \
 
 We now have three useful files:
 
-* `test-ca.cert` -- this is our CA certificate, forming the whole CA chain.
-* `test-signer.cert` -- this is the certificate to be used to sign documents.
-* `test-signer.key` -- private key of the signer certificate.
+* `test-ca.cert`: this is our CA certificate, forming the whole CA chain.
+* `test-signer.cert`: this is the certificate to be used to sign documents.
+* `test-signer.key`: private key of the signer certificate.
 
 
 ## 3. Verify the generated certificates
