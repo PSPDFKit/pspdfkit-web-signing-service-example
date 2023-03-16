@@ -8,6 +8,10 @@ PSPDFKit offers support for customers with an active SDK license via https://psp
 
 Are you [evaluating our SDK](https://pspdfkit.com/try/)? That's great, we're happy to help out! To make sure this is fast, please use a work email and have someone from your company fill out our sales form: https://pspdfkit.com/sales/
 
+# Setting up Certification Authority and signing certificate for testing purposes
+
+Please refer to the [dedicated document](certs/README.md).
+
 # Setup
 
 ## With Docker
