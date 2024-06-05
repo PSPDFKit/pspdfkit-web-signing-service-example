@@ -1,0 +1,6 @@
+*.pem
+*.key
+*.cert
+*.crt
+*.srl
+!GlobalTrust.pem
