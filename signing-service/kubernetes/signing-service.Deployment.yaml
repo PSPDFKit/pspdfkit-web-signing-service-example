@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pspdfkit-signing-service
+  namespace: pspdfkit-services
+  labels:
+    app.kubernetes.io/name: pspdfkit-signing-service
+    app.kubernetes.io/instance: pspdfkit-signing-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: pspdfkit-signing-service
+      app.kubernetes.io/instance: pspdfkit-signing-service
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: pspdfkit-signing-service
+        app.kubernetes.io/instance: pspdfkit-signing-service
+    spec:
+      containers:
+        - name: pspdfkit-signing-service
+          image: "pspdfkit/signing-service:latest"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SIGNING_SERVICE_PORT
+              value: "6000"
+          ports:
+            - name: http
+              containerPort: 6000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            limits:
+              cpu: '1'
+              memory: 500Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
