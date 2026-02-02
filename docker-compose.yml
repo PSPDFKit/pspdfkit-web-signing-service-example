@@ -1,0 +1,65 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: nutrient
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: nutrient
+      POSTGRES_INITDB_ARGS: --data-checksums
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  document_engine:
+    image: pspdfkit/document-engine:latest
+    environment:
+      PGUSER: nutrient
+      PGPASSWORD: password
+      PGDATABASE: nutrient
+      PGHOST: db
+      PGPORT: 5432
+
+      # Activation key for your Nutrient Document Engine installation. Leave commented to boot Document Engine in trial mode.
+      # ACTIVATION_KEY: <your-activation-key>
+
+      # Secret token used for authenticating API requests.
+      API_AUTH_TOKEN: secret
+
+      # Base key used for deriving secret keys for the purposes of authentication.
+      SECRET_KEY_BASE: secret-key-base
+
+      # Public key used for verification of JWTs from web clients. It has to be in the PEM format.
+      JWT_PUBLIC_KEY: |
+        -----BEGIN PUBLIC KEY-----
+        MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBALd41vG5rMzG26hhVxE65kzWC+bYQ94t
+        OxsSxIQZMOc1GY8ubuqu2iku5/5isaFfG44e+VAe+YIdVeQY7cUkaaUCAwEAAQ==
+        -----END PUBLIC KEY-----
+      JWT_ALGORITHM: RS256
+
+      # Credentials to access the admin dashboard
+      DASHBOARD_USERNAME: dashboard
+      DASHBOARD_PASSWORD: secret
+
+      SIGNING_SERVICE_URL: http://signing_service:6000/sign
+    volumes:
+      - "../../custom-fonts:/custom-fonts"
+      - "./certs:/certificate-stores"
+    depends_on:
+      - db
+      - signing_service
+    ports:
+      - 5000:5000
+  signing_service:
+    build: .
+    environment:
+      SIGNING_SERVICE_PORT: 6000
+      T2GO_USER: ${T2GO_USER:-}
+      T2GO_PASSWORD: ${T2GO_PASSWORD:-}
+      GLOBALSIGN_API_KEY: ${GLOBALSIGN_API_KEY:-}
+      GLOBALSIGN_API_SECRET: ${GLOBALSIGN_API_SECRET:-}
+      GLOBALSIGN_TLS_CERT: ${GLOBALSIGN_TLS_CERT:-}
+      GLOBALSIGN_TLS_KEY: ${GLOBALSIGN_TLS_KEY:-}
+    ports:
+      - 6000:6000
+
+volumes:
+  pgdata:
