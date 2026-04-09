@@ -1,0 +1,8 @@
+*.pem
+*.key
+*.cert
+*.crt
+*.srl
+!GlobalTrust.pem
+!GlobalSignDocumentSigningRoot.pem
+!GlobalSignAATLRoot.pem
