@@ -1,0 +1,61 @@
+# AWS ships the CloudHSM Client SDK 5 PKCS#11 library linked against glibc, so musl's
+# dynamic loader cannot load it and the default Alpine image is not an option here.
+# Ubuntu 24.04 is one of the platforms AWS builds that package for.
+FROM ubuntu:24.04 AS base
+
+ARG NODE_MAJOR=24
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ca-certificates curl gnupg && \
+    mkdir -p /etc/apt/keyrings && \
+    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
+      | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_MAJOR}.x nodistro main" \
+      > /etc/apt/sources.list.d/nodesource.list && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends nodejs && \
+    apt-get purge -y --auto-remove gnupg && \
+    rm -rf /var/lib/apt/lists/*
+
+# The toolchain is confined to this stage because the nodejs package depends on python3,
+# so removing the build dependencies in place would take the runtime with them.
+FROM base AS dependencies
+
+WORKDIR /app
+
+COPY package*.json .npmrc ./
+
+# graphene-pk11 needs to build its native components, install all the dependencies before fetching npm dependencies.
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends python3 make g++ && \
+    npm ci --only=production && \
+    rm -rf /var/lib/apt/lists/*
+
+FROM base
+
+# Pin the client so two builds of the same commit install the same library. AWS keeps
+# every published version under this prefix alongside the `latest` alias.
+ARG CLOUDHSM_PKCS11_VERSION=5.18.0-1
+
+WORKDIR /app
+
+# The PKCS#11 library is installed into the image rather than mounted from the host,
+# because a task on ECS Fargate has no host path to bind-mount from.
+RUN ARCH="$(dpkg --print-architecture)" && \
+    curl -fsSL -o /tmp/cloudhsm-pkcs11.deb \
+      "https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/Noble/cloudhsm-pkcs11_${CLOUDHSM_PKCS11_VERSION}_u24.04_${ARCH}.deb" && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends /tmp/cloudhsm-pkcs11.deb dumb-init && \
+    rm -f /tmp/cloudhsm-pkcs11.deb && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY . /app
+
+# After the application, so the natively built modules are not overwritten by anything
+# the build context happens to carry.
+COPY --from=dependencies /app/node_modules ./node_modules
+
+RUN rm README.md && rm certs/README.md
+
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+CMD ["./entrypoint.cloudhsm.sh"]

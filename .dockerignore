@@ -1,0 +1,11 @@
+node_modules
+__tests__
+kubernetes
+
+# Locally generated test material. The SoftHSM image regenerates it during the build;
+# the CloudHSM image must not ship a signing key, and would otherwise silently fall
+# back to the test certificate when HSM_SIGNER_CERTIFICATE is unset.
+certs/*.key
+certs/*.cert
+certs/*.csr
+certs/*.srl
